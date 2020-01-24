@@ -46,15 +46,15 @@ void merge(int ar[], int l, int m, int r)
 
     while (i < n1)
     {
-      ar[k] = L[i];
-      i++;
-      k++;
+    	ar[k] = L[i];
+    	i++;
+    	k++;
     }
     while (j < n2)
     {
-      ar[k] = R[j];
-      j++;
-      k++;
+    	ar[k] = R[j];
+    	j++;
+    	k++;
     }
 }
 
@@ -85,9 +85,9 @@ void *merge_sort(void *a)
 
 void print_array(int ar[], int len)
 {
-  for(int i=0; i<len; i++)
-    printf("%d ",ar[i]);
-  printf("\n");
+	for(int i=0; i<len; i++)
+		printf("%d ",ar[i]);
+	printf("\n");
 }
 
 int main()
@@ -97,7 +97,7 @@ int main()
     scanf("%d",&n);
     printf("\nEnter the elemnts: ");
     for(int i=0; i<n; i++)
-      scanf("%d",&ar[i]);
+    	scanf("%d",&ar[i]);
     printf("\nThe array given is: ");
     print_array(ar,n);
 
