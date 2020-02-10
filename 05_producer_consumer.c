@@ -43,7 +43,7 @@ void *Producer()
         printf("Produce : %d \n",BufferIndex);
         pthread_mutex_unlock(&mVar);
         pthread_cond_signal(&Buffer_Not_Empty);
-        sleep(2);        
+        //sleep(2);        
     }    
     
 }
@@ -60,6 +60,6 @@ void *Consumer()
         printf("Consume : %d \n",BufferIndex--);        
         pthread_mutex_unlock(&mVar);        
         pthread_cond_signal(&Buffer_Not_Full);
-        sleep(2);                
+        //sleep(2);                
     }    
 }
