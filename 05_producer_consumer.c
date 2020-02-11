@@ -32,13 +32,28 @@ void consume(int p,pthread_t self){
 	printf("\nConsumer %d consumed %d \nCurrent buffer len: %d\n\n",i+1,p,buf_pos);
 }
 
-void* producer(void *args){
+void print_buf_full()
+{
+	printf("Cannot Insert to Buffer, Buffer is full\n");
+}
 
+void print_buf_empty()
+{
+	printf("Buffer is Empty, Cannot Consume.\n");
+}
+
+void* producer(void *args){
 	while(1){
 		int p = produce(pthread_self());
+		++buf_pos;
+		if(buf_pos>=buf_len)
+		{
+			print_buf_full();
+			sleep(5);
+			continue;
+		}
 		sem_wait(&empty);
 		sem_wait(&mutex);
-		++buf_pos;
 		*(buf + buf_pos) = p; 
 		sem_post(&mutex);
 		sem_post(&full);
@@ -51,6 +66,12 @@ void* producer(void *args){
 void* consumer(void *args){
 	int c;
 	while(1){
+		if(buf_pos<=-1)
+		{
+			print_buf_empty();
+			sleep(5);
+			continue;
+		}
 		sem_wait(&full);
 		sem_wait(&mutex);
 		c = *(buf+buf_pos);
