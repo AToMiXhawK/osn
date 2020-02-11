@@ -49,7 +49,8 @@ void* producer(void *args){
 		if(buf_pos>=buf_len)
 		{
 			print_buf_full();
-			sleep(5);
+			sleep(3 + rand()%3);
+			--buf_pos;
 			continue;
 		}
 		sem_wait(&empty);
@@ -69,7 +70,7 @@ void* consumer(void *args){
 		if(buf_pos<=-1)
 		{
 			print_buf_empty();
-			sleep(5);
+			sleep(3 + rand()%4);
 			continue;
 		}
 		sem_wait(&full);
