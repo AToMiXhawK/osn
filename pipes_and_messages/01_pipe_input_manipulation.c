@@ -73,6 +73,7 @@ int main() {
         fd = open("counts.txt", O_RDONLY);
         read(fd, file_data, buf_size);
         write(pipefds2[1], file_data, sizeof(file_data));
+        close(fd);
         close(pipefds1[0]);
         close(pipefds2[1]);
     }
