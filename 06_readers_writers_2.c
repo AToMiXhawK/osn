@@ -8,15 +8,19 @@
 #include <sched.h>
 #include "queue.h"
 
+
 #define max 6
-int rc=0;
+int rc=0,w=0;
 sem_t mutex,wrt;
+pthread_attr_t tattr;
+pthread_t tid[max];
+int ret;
+struct sched_param param;
 struct Queue *wq, *rq;
 struct QNode *qn;
 
 void *reader(void *arg)
 {
-    sleep(0.01);
     srand(time(0));
     int id = *((int *) arg);
     FILE *f;
@@ -31,6 +35,8 @@ void *reader(void *arg)
         printf("Read Queue: ");
 		printQueue(rq);
         printf("\n");
+        while(w>0);
+           // goto b;
         int t=(rand()%3)+1;
         sem_wait(&mutex);
         rc++;
@@ -55,7 +61,8 @@ void *reader(void *arg)
         if(rc==0)
             sem_post(&wrt);
         sem_post(&mutex);    
-        sleep(t);
+       
+        //b:   sleep(t);
         
     }
     pthread_exit(0);
@@ -63,12 +70,12 @@ void *reader(void *arg)
 
 void *writer(void *arg)
 {
-     srand(time(0));
+    srand(time(0));
     int id = *((int *) arg);
     FILE *f;
     while(1)
     {
-       
+        w++;
         int t=(rand()%3)+2;
         printf("Writer %d arrived",id);
 		if(!isQueueEmpty(wq))
@@ -91,18 +98,20 @@ void *writer(void *arg)
         printf("Writer Queue: ");
 		printQueue(wq);
         printf("\n");
+        w--;
         sleep(t);
     }
     pthread_exit(0);
 }
 int main()
 {
-    srand(time(0));
     wq = createQueue();
     rq = createQueue();
+
+    srand(time(0));
     int id[max],i;
     FILE *f;
-    pthread_t tid[max];
+
     sem_init(&wrt,0,1);
     sem_init(&mutex,0,1);
     
@@ -113,18 +122,18 @@ int main()
     id[4]=2;
     id[5]=2;
     f = fopen("Object.txt","w");
-    int n=rand()%10;
+    int n = rand();
     fprintf(f,"%d",n);
     fclose(f);
-    pthread_create(&tid[0],NULL,writer,(void *) &id[0]);
+    ret=pthread_create(&tid[0],&tattr,writer,(void *) &id[0]);
     printf("Writer %d created\n",id[0]);
     pthread_create(&tid[1],NULL,reader,(void *) &id[1]);
     printf("Reader %d created\n",id[1]);
-    pthread_create(&tid[2],NULL,writer,(void *) &id[2]);
+    ret=pthread_create(&tid[2],&tattr,writer,(void *) &id[2]);
     printf("Writer %d created\n",id[2]);
     pthread_create(&tid[3],NULL,reader,(void *) &id[3]);
     printf("Reader %d created\n",id[3]);
-    pthread_create(&tid[4],NULL,writer,(void *) &id[4]);
+    ret=pthread_create(&tid[4],&tattr,writer,(void *) &id[4]);
     printf("Writer %d created\n",id[4]);
     pthread_create(&tid[5],NULL,reader,(void *) &id[5]);
     printf("Reader %d created\n",id[5]);
